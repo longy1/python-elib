@@ -6,8 +6,10 @@
 __author__ = 'Ethan Long'
 
 from socket import *
-server_name = '106.55.243.139'
-server_port = 12000
+#server_name = '106.55.243.139'
+# server_port = 12000
+server_name = '127.0.0.1'
+server_port = 12001
 
 # 实例化socket
 client_socket = socket(AF_INET, SOCK_DGRAM)
