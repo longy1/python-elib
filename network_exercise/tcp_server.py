@@ -17,7 +17,16 @@ print('Server established.')
 
 while True:
 	connect_socket, addr = server_socket.accept()
-	message = connect_socket.recv(2048).decode()
-	response = message.upper()
-	connect_socket.send(response.encode())
+
+	while True:
+		message = connect_socket.recv(2048).decode()
+		print(f'Recieve message: {message}')
+
+		if message == 'EOF':
+			connect_socket.send('CLOSE'.encode())
+			break
+
+		response = message.upper()
+		connect_socket.send(response.encode())
+
 	connect_socket.close()
