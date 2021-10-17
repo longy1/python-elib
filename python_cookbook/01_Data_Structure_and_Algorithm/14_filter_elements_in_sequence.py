@@ -16,5 +16,4 @@ addresses = [
     '1039 W GRANVILLE',
 ]
 counts = [ 0, 3, 10, 4, 1, 7, 6, 1]
-
 print([x for x in zip(addresses, counts) if x[1] > 5])
