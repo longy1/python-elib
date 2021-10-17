@@ -27,11 +27,11 @@ client_socket.connect((server_name, server_port))
 # print(f'response 2: {response2}')
 
 while True:
-	message = input('Input message to send, input EOF to end: ')
-	client_socket.send(message.encode())
-	response = client_socket.recv(2048).decode()
-	print(f'Recieve response: {response}')
-	if response == 'CLOSE':
-		break
+    message = input('Input message to send, input EOF to end: ')
+    client_socket.send(message.encode())
+    response = client_socket.recv(2048).decode()
+    print(f'Recieve response: {response}')
+    if response == 'CLOSE':
+        break
 
 client_socket.close()

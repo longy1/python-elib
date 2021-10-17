@@ -8,20 +8,20 @@ __author__ = 'Ethan Long'
 import threading, time
 
 def thread_1():
-	with lock_1:
-		print('t1 get lock_1')
-		time.sleep(1)
-		with lock_2:
-			print('t1 get lock_2')
-			time.sleep(2)
+    with lock_1:
+        print('t1 get lock_1')
+        time.sleep(1)
+        with lock_2:
+            print('t1 get lock_2')
+            time.sleep(2)
 
 def thread_2():
-	with lock_2:
-		print('t2 get lock_2')
-		time.sleep(1)
-		with lock_1:
-			print('t2 get lock_1')
-			time.sleep(2)
+    with lock_2:
+        print('t2 get lock_2')
+        time.sleep(1)
+        with lock_1:
+            print('t2 get lock_1')
+            time.sleep(2)
 
 lock_1 = threading.Lock()
 lock_2 = threading.Lock()

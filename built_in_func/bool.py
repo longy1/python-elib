@@ -7,16 +7,16 @@
 
 # 测试覆盖性
 class A(object):
-	"""docstring for A"""
-	def __init__(self, arg):
-		super(A, self).__init__()
-		self.arg = arg
-		
-	# def __bool__(self):
-	# 	return False
+    """docstring for A"""
+    def __init__(self, arg):
+        super(A, self).__init__()
+        self.arg = arg
+        
+    # def __bool__(self):
+    #     return False
 
-	def __len__(self):
-		return 1
+    def __len__(self):
+        return 1
 
 a = A(1)
 print(bool(a))

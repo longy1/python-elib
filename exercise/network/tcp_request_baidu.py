@@ -13,12 +13,12 @@ server_name = 'www.baidu.com'
 server_port = 80
 
 def make_http_massage(method):
-	if method == 'GET':
-		request = 'GET / HTTP/1.1\r\n'
-		header = 'HOST: www.baidu.com\r\n'
-		end = '\r\n'
+    if method == 'GET':
+        request = 'GET / HTTP/1.1\r\n'
+        header = 'HOST: www.baidu.com\r\n'
+        end = '\r\n'
 
-		return request + header + end
+        return request + header + end
 
 
 http_message = make_http_massage('GET')

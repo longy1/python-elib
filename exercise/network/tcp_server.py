@@ -16,17 +16,17 @@ server_socket.listen(1)
 print('Server established.')
 
 while True:
-	connect_socket, addr = server_socket.accept()
+    connect_socket, addr = server_socket.accept()
 
-	while True:
-		message = connect_socket.recv(2048).decode()
-		print(f'Recieve message: {message}')
+    while True:
+        message = connect_socket.recv(2048).decode()
+        print(f'Recieve message: {message}')
 
-		if message == 'EOF':
-			connect_socket.send('CLOSE'.encode())
-			break
+        if message == 'EOF':
+            connect_socket.send('CLOSE'.encode())
+            break
 
-		response = message.upper()
-		connect_socket.send(response.encode())
+        response = message.upper()
+        connect_socket.send(response.encode())
 
-	connect_socket.close()
+    connect_socket.close()

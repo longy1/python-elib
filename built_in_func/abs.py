@@ -6,4 +6,4 @@
 '实际调用对象内部的__abs__()方法'
 
 if __name__ == '__main__':
-	print(f'abs(-2) = {abs(-2)}')
+    print(f'abs(-2) = {abs(-2)}')

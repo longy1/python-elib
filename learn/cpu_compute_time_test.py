@@ -11,7 +11,7 @@ n = 2**25
 start = time.time()
 i = 0
 while i < 2**25:
-	i += 1
+    i += 1
 end = time.time()
 
 print(round((end-start), 2))

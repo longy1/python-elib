@@ -6,7 +6,7 @@
 
 # 等价于
 def all(iter):
-	for i in all:
-		if not i:
-			return False
-	return True
+    for i in all:
+        if not i:
+            return False
+    return True

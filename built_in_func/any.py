@@ -6,7 +6,7 @@
 
 # 等价于
 def any(iter):
-	for i in iter:
-		if i:
-			return True
-	return False
+    for i in iter:
+        if i:
+            return True
+    return False
