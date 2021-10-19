@@ -1,4 +1,4 @@
-#!/usr/bin/ python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 'use re.compile(), then use pattern.match(), pattern.findall(), pattern.finditer()'
