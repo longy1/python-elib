@@ -7,7 +7,7 @@ x = 0
 
 def add():
     global x
-    for i in range(10000):
+    for i in range(1000000):
         x += 1
 
 from threading import Thread
