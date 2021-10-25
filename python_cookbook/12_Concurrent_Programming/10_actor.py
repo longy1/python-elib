@@ -32,7 +32,6 @@ class Actor:
         self.send(ActorExit)
 
     def start(self):
-        # 未处理重复start的调用
         self._terminated = Event()
         t = Thread(target=self._bootstrap)
         t.daemon = True
