@@ -1,61 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-流程
-实例化Scheduler
-    维护任务数, 就绪队列, 等待读列表, 等待写列表
-一个本地地址和一个调度器实例化EchoServer
-    EchoServer维护调度器引用
-    EchoServer把server_loop(addr)装入调度器就绪队列
-    server_loop开始执行会阻塞在yield等待socket accept建立连接
-第一次调度器run方法, 对任务数死循环
-    task, msg = self._ready.popleft()
-    此时task = server_loop(addr), msg = None
-    r = task.send(msg), 即用None启动server_loop方法
-第一次server_loop
-    实例化包装版Socket, bind, listen
-    直到底层accept请求进入, yield AcceptSocket对象, 这是一个YieldEvent
-yield返回到run方法
-    判断r是否为YieldEvent, 若是, 则调用r自身的handle_yield(self, task)方法处理task
-    传入了self, 即告诉了YieldEvent调度器的引用
-AcceptSocket.handle_yield接收到sched与task
-    此时task仍然是server_loop
-    调用sched._read_wait(fileno, self, task)进行读等待
-    _read_wait会将fileno添加到_read_waiting中, 值为evt, task
-此时完成了Accept的初始化, 并且开始等待socket读取
-第二次run, 就绪队列为空, 调用_iopoll()
-第一次_iopoll(), 读等待列表存在socket
-    通过select系统调用, 阻塞等待到新的读就绪, 写就绪, 异常就绪fileno集合
-    对于读就绪集合:
-        获取其evt, task
-        调用evt的回调handle_resume, 传入sched与task
-    对于写就绪的集合:
-        读取其evt, task
-        调用evt的回调handle_resume, 传入sched与task
-第一次读回调AcceptSocket.handle_resume
-    此时真正处理accept请求
-    socket.accept()获取了socket与addr对象
-    将server_loop, (socket, addr)加入就绪队列
-第三次run, 就绪队列存在server_loop, 出队并send((socekt, addr))
-回到server_loop
-    c, a接受了调度器send的socket, addr
-    向调度器加入client_handler(Socket(c))
-    server_loop继续yield出一个AcceptSocekt事件给调度器, 循环之前的读取等待
-在新一轮run时, 开始执行client_handler(Socket(c))
-    此时, 该Socket对象是一个连接socket, 称为client
-    使用readline(client)尝试读取socket
-    获得line之后, 使用client.send(line), 调用Socket.send()
-获得line使用了Socket的recv(maxbytes)方法, 该方法接受单次读取最大长度作为参数, 并用其实例化一个ReadSocket事件
-Socket.send(self, data)用data实例化一个等待Write事件, 被run中的r获取后, 通过handle_yield, 将socket的fileno加入等待写列表
-经过select后, 等待写列表会就绪, 则该data实际被发出
-
-特征
-除了就绪队列为空时需要_iopoll进而select进行轮询以获取更多就绪事件, 其它时候, 异步等待的协程均挂起到等待列表, 不阻塞就绪协程的执行
-实现了yield协程等待IO的简单调度版本, 但是也足够学习了
+使用DefautSelector改造, 在支持epoll的平台上会使用epoll实现
 """
 
 from collections import deque
 from select import select
+from selectors import DefaultSelector, EVENT_READ, EVENT_WRITE
 
 
 # This class represents a generic yield event in the scheduler
@@ -76,17 +27,15 @@ class Scheduler:
     def __init__(self):
         self._numtasks = 0  # Total num of tasks
         self._ready = deque()  # Tasks ready to run
-        self._read_waiting = {}  # Tasks waiting to read
-        self._write_waiting = {}  # Tasks waiting to write
+        self._selector = DefaultSelector()  # Higer level i/o multiplexing library
 
     # Poll for I/O events and restart waiting tasks
     def _iopoll(self):
-        rset, wset, eset = select(self._read_waiting, self._write_waiting, [])
-        for r in rset:
-            evt, task = self._read_waiting.pop(r)
-            evt.handle_resume(self, task)
-        for w in wset:
-            evt, task = self._write_waiting.pop(w)
+        ready_list = self._selector.select()
+        for ready in ready_list:
+            key = ready[0]
+            evt, task = key.data
+            self._selector.unregister(key.fileobj)
             evt.handle_resume(self, task)
 
     def new(self, task):
@@ -105,11 +54,17 @@ class Scheduler:
 
     # Add a task to the reading set
     def _read_wait(self, fileno, evt, task):
-        self._read_waiting[fileno] = (evt, task)
+        try:
+            self._selector.get_key(fileno)
+        except KeyError:
+            self._selector.register(fileno, EVENT_READ, data=(evt, task))
 
     # Add a task to the write set
     def _write_wait(self, fileno, evt, task):
-        self._write_waiting[fileno] = (evt, task)
+        try:
+            self._selector.get_key(fileno)
+        except KeyError:
+            self._selector.register(fileno, EVENT_WRITE, data=(evt, task))
 
     def run(self):
         """
