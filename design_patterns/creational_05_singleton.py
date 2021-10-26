@@ -85,7 +85,7 @@ def singleton(cls):
         with _instance_lock[cls]:
             if cls not in _instance:
                 _instance[cls] = cls()
-        _instance_lock[cls] = None
+        del _instance_lock[cls]
         return _instance[cls]
 
     return wrapper
