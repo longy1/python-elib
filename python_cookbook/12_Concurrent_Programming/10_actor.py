@@ -131,6 +131,6 @@ class GeneralActor(Actor):
 worker = GeneralActor()
 worker.start()
 r = worker.submit(pow, 2, 3)
+print(r.result())
 worker.close()
 worker.join()
-print(r.result())
