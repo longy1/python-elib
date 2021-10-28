@@ -27,7 +27,7 @@ class Scheduler:
     def __init__(self):
         self._numtasks = 0  # Total num of tasks
         self._ready = deque()  # Tasks ready to run
-        self._selector = DefaultSelector()  # Higer level i/o multiplexing library
+        self._selector = DefaultSelector()  # Higher level i/o multiplexing library
 
     # Poll for I/O events and restart waiting tasks
     def _iopoll(self):

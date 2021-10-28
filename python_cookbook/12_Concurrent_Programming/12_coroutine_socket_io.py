@@ -7,7 +7,7 @@
 一个本地地址和一个调度器实例化EchoServer
     EchoServer维护调度器引用
     EchoServer把server_loop(addr)装入调度器就绪队列
-    server_loop开始执行会阻塞在yield等待socket accept建立连接
+    server_loop开始执行会阻塞在yield, 抛出一个Accept事件用于建立连接
 第一次调度器run方法, 对任务数死循环
     task, msg = self._ready.popleft()
     此时task = server_loop(addr), msg = None
@@ -47,7 +47,7 @@ AcceptSocket.handle_yield接收到sched与task
     获得line之后, 使用client.send(line), 调用Socket.send()
 获得line使用了Socket的recv(maxbytes)方法, 该方法接受单次读取最大长度作为参数, 并用其实例化一个ReadSocket事件
 Socket.send(self, data)用data实例化一个等待Write事件, 被run中的r获取后, 通过handle_yield, 将socket的fileno加入等待写列表
-经过select后, 等待写列表会就绪, 则该data实际被发出
+经过select后, 等待写列表会就绪, 通过handle_resume()将其放入就绪队列, 调度到该事件时data实际被发出
 
 特征
 除了就绪队列为空时需要_iopoll进而select进行轮询以获取更多就绪事件, 其它时候, 异步等待的协程均挂起到等待列表, 不阻塞就绪协程的执行
