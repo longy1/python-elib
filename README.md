@@ -1,1 +1,1 @@
-# Python Ethan's Library
+# Ethan's Python Library
