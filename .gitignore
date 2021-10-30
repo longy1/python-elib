@@ -130,3 +130,6 @@ dmypy.json
 
 # localsetting dir
 */localsetting/
+
+# .idea dir
+*/.idea/
