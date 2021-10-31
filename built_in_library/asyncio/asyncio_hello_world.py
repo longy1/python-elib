@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-'first try asyncio'
-
-__author__ = 'Ethan Long'
+"""
+first use of asyncio
+"""
 
 import asyncio
 import time
@@ -15,10 +15,10 @@ async def say_after(delay, what):
 
 async def main():
     task1 = asyncio.create_task(
-        say_after(1, 'hello'))
+        say_after(1, 'hello task1'))
 
     task2 = asyncio.create_task(
-        say_after(2, 'world'))
+        say_after(2, 'hello task2'))
 
     print(f"started at {time.strftime('%X')}")
 
