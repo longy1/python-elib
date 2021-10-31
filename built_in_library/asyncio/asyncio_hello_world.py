@@ -2,7 +2,16 @@
 # -*- coding: utf-8 -*-
 
 """
-first use of asyncio
+async def will define a async func.
+
+await will block it self, but won't block outer func.
+await can be used to start a async func, but may block other coroutines.
+
+asyncio.run(async_func) starts a new async procedure
+async func can not be called directly.
+
+asyncio.create_task(async_func(*args, **kwargs)) will return a awaitable
+Task object, await Task will not blocking other coroutines.
 """
 
 import asyncio
