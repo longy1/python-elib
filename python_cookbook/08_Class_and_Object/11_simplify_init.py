@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-defince base init class and inheritant it
+define base init class and inheritant it
 """
 
 class BaseInit:
