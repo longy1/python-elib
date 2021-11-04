@@ -4,18 +4,26 @@
 线程安全的singleton
 """
 
-# 立即加载, 基于__new__(), 在类创建时便已经实例化, 不需要保证线程安全也线程安全
+
+# 懒加载, 基于类上的__new__(), 接管实例化过程, 需要保证线程安全
+from threading import Lock
+
+
 class Singleton:
 
     _instance = None
+    _instance_lock = Lock()
 
     def __init__(self):
         pass
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            cls._instance = super().__new__(cls, *args, **kwargs)
+            with cls._instance_lock:
+                if not cls._instance:
+                    cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
+
 
 class AFactory(Singleton):
     pass
@@ -34,8 +42,6 @@ print(id(a), id(b), id(a)==id(b))
 
 
 # 懒加载, 基于__call__(), metaclass负责维护单实例, 但并发实例化需要保证线程安全
-from threading import Lock
-
 class Singleton(type):
 
     def __init__(self, *args, **kwargs):
@@ -50,6 +56,7 @@ class Singleton(type):
             if not self._instance:
                 self._instance = super().__call__(*args, **kwargs)
             return self._instance
+
 
 class CFactory(metaclass=Singleton):
 
@@ -79,13 +86,13 @@ def singleton(cls):
     _instance = {}
     _instance_lock = defaultdict(Lock)
 
-    def wrapper():
+    def wrapper(*args, **kwargs):
         if cls in _instance:
             return _instance[cls]
         with _instance_lock[cls]:
             if cls not in _instance:
-                _instance[cls] = cls()
-        del _instance_lock[cls]
+                _instance[cls] = cls(*args, **kwargs)
+            del _instance_lock[cls]
         return _instance[cls]
 
     return wrapper
@@ -107,4 +114,29 @@ b = EFactory()
 print(id(a), id(b), id(a)==id(b))
 a = FFactory()
 b = FFactory()
+print(id(a), id(b), id(a)==id(b))
+
+
+# 立即加载, 使用类封装一个实例
+class GFactory():
+
+    _instance = object()
+
+    def __new__(cls, *args, **kwargs):
+        return cls._instance
+
+
+class HFactory():
+
+    _instance = object()
+
+    def __new__(cls, *args, **kwargs):
+        return cls._instance
+
+
+a = GFactory()
+b = GFactory()
+print(id(a), id(b), id(a)==id(b))
+a = HFactory()
+b = HFactory()
 print(id(a), id(b), id(a)==id(b))
